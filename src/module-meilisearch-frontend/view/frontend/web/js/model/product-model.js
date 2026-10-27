@@ -18,7 +18,7 @@ define([
         if (!path) return '';
 
         const mediaBase = String(meilisearchConfig.mediaBaseUrl || '').replace(/\/+$/, '');
-        const hash = cfg && cfg.hash;
+        const hash = !path.startsWith('placeholder/') && cfg && cfg.hash;
 
         if (hash) {
             return mediaBase + '/cache/' + hash + '/' + path;
