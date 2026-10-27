@@ -46,7 +46,7 @@ class ImageCacheHashResolver
 
         $url = $this->imageHelper->init($product, $imageId)->getUrl();
         $hash = null;
-        if (preg_match('#/cache/([^/]+)/#', $url, $matches)) {
+        if (preg_match('#/cache/([0-9a-f]{32})/#', $url, $matches)) {
             $hash = $matches[1];
         }
 

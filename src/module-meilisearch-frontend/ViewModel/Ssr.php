@@ -478,7 +478,14 @@ class Ssr implements ArgumentInterface
      */
     public function getProductImage(string $image): string
     {
-        return $this->config['mediaBaseUrl'] . $image;
+        $mediaBaseUrl = rtrim((string)$this->config['mediaBaseUrl'], '/');
+        $image = ltrim($image, '/');
+        // placeholders are served from their original path, never resized into the cache
+        $hash = str_starts_with($image, 'placeholder/')
+            ? null
+            : $this->config['images']['category_page_' . $this->getProductListMode()]['hash'] ?? null;
+
+        return $mediaBaseUrl . ($hash ? '/cache/' . $hash : '') . '/' . $image;
     }
 
     /**
