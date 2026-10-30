@@ -12,6 +12,14 @@
                         <field id="engine">meilisearch</field>
                     </depends>
                 </field>
+                <field id="meilisearch_category_name_searchable" translate="label comment" type="select" sortOrder="220" showInDefault="1" canRestore="1">
+                    <label>Search Category Names</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Matches products on the names of their categories and parent categories, ranked straight after the product name. Best left off when categories have names like "Sale" or "New In" that would match unrelated searches. Needs a full reindex.</comment>
+                    <depends>
+                        <field id="engine">meilisearch</field>
+                    </depends>
+                </field>
             </group>
         </section>
     </system>

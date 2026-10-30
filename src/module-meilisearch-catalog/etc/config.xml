@@ -5,6 +5,7 @@
         <catalog>
             <search>
                 <meilisearch_magento_synonyms>0</meilisearch_magento_synonyms>
+                <meilisearch_category_name_searchable>0</meilisearch_category_name_searchable>
             </search>
         </catalog>
     </default>
