@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Walkwizus\MeilisearchSearchAdapter\Plugin\Service;
 
 use Meilisearch\Contracts\Task;
+use Walkwizus\MeilisearchBase\Model\Indexer\BaseIndexerHandler;
 use Walkwizus\MeilisearchBase\Service\SettingsManager;
 
 /**
@@ -41,9 +42,10 @@ class AdjustIndexSettings
 
         if (str_contains((string)$indexName, 'catalog_product')) {
             try {
-                $rules = $subject->getSettings($indexName)['rankingRules'] ?? self::DEFAULT_RANKING_RULES;
+                // a full reindex's temporary index is created by a task still queued, so read the live index
+                $liveIndexName = preg_replace('/_' . BaseIndexerHandler::INDEX_SWAP_SUFFIX . '$/', '', (string)$indexName);
+                $rules = $subject->getSettings($liveIndexName)['rankingRules'] ?? self::DEFAULT_RANKING_RULES;
             } catch (\Exception) {
-                // a full reindex's temporary index is created by the task just queued, so it may not exist yet
                 $rules = self::DEFAULT_RANKING_RULES;
             }
             $settings['rankingRules'] = array_values(array_unique(['sort', ...$rules]));
