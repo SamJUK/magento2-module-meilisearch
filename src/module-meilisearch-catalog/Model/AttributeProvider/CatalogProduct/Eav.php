@@ -6,6 +6,7 @@ namespace Walkwizus\MeilisearchCatalog\Model\AttributeProvider\CatalogProduct;
 
 use Walkwizus\MeilisearchBase\Api\AttributeProviderInterface;
 use Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory as AttributeCollectionFactory;
+use Walkwizus\MeilisearchCatalog\Model\Config;
 
 class Eav implements AttributeProviderInterface
 {
@@ -33,12 +34,14 @@ class Eav implements AttributeProviderInterface
 
     /**
      * @param AttributeCollectionFactory $attributeCollectionFactory
+     * @param Config $config
      * @param array $additionalFilterableAttributes
      * @param array $additionalSearchableAttributes
      * @param array $additionalSortableAttributes
      */
     public function __construct(
         private readonly AttributeCollectionFactory $attributeCollectionFactory,
+        private readonly Config $config,
         array $additionalFilterableAttributes = [],
         array $additionalSearchableAttributes = [],
         array $additionalSortableAttributes = []
@@ -89,6 +92,12 @@ class Eav implements AttributeProviderInterface
 
         foreach ($attributes as $attribute) {
             $searchableAttributes[] = $attribute->getAttributeCode();
+        }
+
+        if ($this->config->isCategoryNameSearchable()) {
+            // searchable attributes rank in order, so category names go straight after the product name
+            $position = array_search('name', $searchableAttributes, true);
+            array_splice($searchableAttributes, $position === false ? count($searchableAttributes) : $position + 1, 0, ['category_name']);
         }
 
         return array_merge($this->additionalSearchableAttributes, $searchableAttributes);

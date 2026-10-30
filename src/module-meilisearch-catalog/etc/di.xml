@@ -61,6 +61,15 @@
             </argument>
         </arguments>
     </type>
+    <type name="Walkwizus\MeilisearchBase\Model\AttributeMapper">
+        <arguments>
+            <argument name="postMappers" xsi:type="array">
+                <item name="catalog_product" xsi:type="array">
+                    <item name="categoryName" xsi:type="object">Walkwizus\MeilisearchCatalog\Model\AttributePostMapper\CatalogProduct\CategoryName</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
     <type name="Walkwizus\MeilisearchBase\Service\SettingsManager">
         <plugin name="meilisearch_catalog_add_product_index_settings" type="Walkwizus\MeilisearchCatalog\Plugin\Service\AddProductIndexSettings"/>
     </type>
