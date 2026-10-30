@@ -61,6 +61,9 @@
             </argument>
         </arguments>
     </type>
+    <type name="Walkwizus\MeilisearchBase\Service\SettingsManager">
+        <plugin name="meilisearch_catalog_add_product_index_settings" type="Walkwizus\MeilisearchCatalog\Plugin\Service\AddProductIndexSettings"/>
+    </type>
     <type name="Magento\Directory\Model\Currency">
         <plugin name="invalidate_meilisearch_product_index_on_rates_save" type="Walkwizus\MeilisearchCatalog\Plugin\Directory\InvalidateProductIndexOnRatesSave"/>
     </type>
