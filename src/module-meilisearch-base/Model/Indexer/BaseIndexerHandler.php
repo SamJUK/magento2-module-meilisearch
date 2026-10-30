@@ -25,6 +25,26 @@ class BaseIndexerHandler implements IndexerInterface
     const INDEX_SWAP_SUFFIX = 'tmp';
 
     /**
+     * Settings tuned on the index itself (the Indices admin page, the Meilisearch API) rather than built from
+     * Magento's attributes, so a full reindex carries them over to the index it swaps in.
+     */
+    private const KEPT_SETTINGS = [
+        'rankingRules',
+        'stopWords',
+        'synonyms',
+        'typoTolerance',
+        'distinctAttribute',
+        'separatorTokens',
+        'nonSeparatorTokens',
+        'dictionary',
+        'proximityPrecision',
+        'localizedAttributes',
+        'searchCutoffMs',
+        'prefixSearch',
+        'facetSearch',
+    ];
+
+    /**
      * @var bool
      */
     private bool $isFullReindex = false;
@@ -84,6 +104,9 @@ class BaseIndexerHandler implements IndexerInterface
             $targetIndexName = $this->isFullReindex ? $indexName . '_' . self::INDEX_SWAP_SUFFIX : $indexName;
 
             try {
+                if ($targetIndexName !== $indexName) {
+                    $this->keepSettings($indexName, $targetIndexName);
+                }
                 $this->settingsManager->updateFilterableAttributes($targetIndexName, $this->attributeProvider->getFilterableAttributes($indexerId, 'index'));
                 $this->settingsManager->updateSortableAttributes($targetIndexName, $this->attributeProvider->getSortableAttributes($indexerId, 'index'));
                 $this->settingsManager->updateSearchableAttributes($targetIndexName, $this->attributeProvider->getSearchableAttributes($indexerId, 'index'));
@@ -136,6 +159,25 @@ class BaseIndexerHandler implements IndexerInterface
         }
 
         return $this;
+    }
+
+    /**
+     * @param string $indexName
+     * @param string $targetIndexName
+     * @return void
+     */
+    private function keepSettings(string $indexName, string $targetIndexName): void
+    {
+        try {
+            $settings = array_intersect_key($this->settingsManager->getSettings($indexName), array_flip(self::KEPT_SETTINGS));
+            // empty values are what a new index has already, and Meilisearch rejects an empty synonyms list
+            $settings = array_filter($settings, fn ($value) => $value !== [] && $value !== null);
+            if ($settings) {
+                $this->settingsManager->updateSettings($targetIndexName, $settings);
+            }
+        } catch (\Exception) {
+            // nothing to keep before the first reindex, and losing tuned settings must not stop the reindex
+        }
     }
 
     /**
